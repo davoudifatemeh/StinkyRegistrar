@@ -9,13 +9,13 @@ public class Student {
 	private String name;
 
 	static class CourseSection {
-        CourseSection(Course course, int section) {
-            this.course = course;
-            this.section = section;
-        }
-        Course course;
-	    int section;
-    }
+		CourseSection(Course course, int section) {
+			this.course = course;
+			this.section = section;
+		}
+		Course course;
+		int section;
+	}
 	private Map<Term, Map<Course, Double>> transcript;
 	private List<CourseSection> currentTerm;
 
@@ -25,7 +25,7 @@ public class Student {
 		this.transcript = new HashMap<>();
 		this.currentTerm = new ArrayList<>();
 	}
-	
+
 	public void takeCourse(Course c, int section) {
 		currentTerm.add(new CourseSection(c, section));
 	}
@@ -35,24 +35,52 @@ public class Student {
 	}
 
 	public void addTranscriptRecord(Course course, Term term, double grade) {
-	    if (!transcript.containsKey(term))
-	        transcript.put(term, new HashMap<>());
-	    transcript.get(term).put(course, grade);
-    }
+		if (!transcript.containsKey(term))
+			transcript.put(term, new HashMap<>());
+		transcript.get(term).put(course, grade);
+	}
 
-    public List<CourseSection> getCurrentTerm() {
-        return currentTerm;
-    }
+	public List<CourseSection> getCurrentTerm() {
+		return currentTerm;
+	}
 
-    public String getId() {
+	public String getId() {
 		return id;
 	}
 
 	public String getName() {
 		return name;
 	}
-	
+
 	public String toString() {
 		return name;
+	}
+
+	public void submitEnrollment(List<CSE> courses) {
+		for (CSE o : courses)
+			takeCourse(o.getCourse(), o.getSection());
+	}
+
+	public double getGPA() {
+		double points = 0;
+		int totalUnits = 0;
+		for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
+			for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
+				points += r.getValue() * r.getKey().getUnits();
+				totalUnits += r.getKey().getUnits();
+			}
+		}
+		double gpa = points / totalUnits;
+		return gpa;
+	}
+
+	public boolean courseIsPassed(Course o) {
+		for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
+			for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
+				if (r.getKey().equals(o) && r.getValue() >= 10)
+					return true;
+			}
+		}
+		return false;
 	}
 }
